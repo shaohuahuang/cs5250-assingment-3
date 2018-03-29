@@ -36,7 +36,7 @@ int onebyte_release(struct inode *inode, struct file *filep)
 }
 ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 {    /*please complete the function on your own*/
-  printf("%c\n", *onebyte_data);
+  buf[0] = *onebyte_data; 
   return 0;
 }
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
@@ -44,8 +44,8 @@ ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t 
   /*please complete the function on your own*/
   *onebyte_data = buf[0];
   if(count > 1){
-    fprintf(stderr, "%s\n", "write error: No space left on device");
-    return -1;
+    // fprintf(stderr, "%s\n", "write error: No space left on device");
+    return -EFAULT;
   }else{
     return 0;
   }
