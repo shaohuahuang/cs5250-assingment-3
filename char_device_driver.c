@@ -37,22 +37,37 @@ int onebyte_release(struct inode *inode, struct file *filep)
 }
 ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 {    /*please complete the function on your own*/ 
-  if(copy_to_user(buf, onebyte_data, 1)){
-	return -EFAULT;	
-  }else{
-	return 1;
-  };
+  if( *f_pos >= 1 )
+        return 0;
+    /* If a user tries to read more than we have, read only as many bytes as we have */
+    if( *f_pos + count > 1 )
+        count = 1 - *f_pos;
+    if( copy_to_user(buf, onebyte_data + *f_pos, count) != 0 )
+        return -EFAULT;    
+    /* Move reading position */
+    *f_pos += count;
+    return count; 
 }
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
 {
   /*please complete the function on your own*/
-  copy_from_user(onebyte_data, buf, 1);
-  if(count > 1){
-    printk(KERN_ALERT "%s\n", "write error: No space left on device");
-    return 1;
-  }else{
-    return 1;
+  int nbytes;        /*Number of bytes actually written to the device */
+  int bytes_to_write; /* Number of bytes to write */
+  int maxbytes;    /* Maximum number of bytes that can be written */
+  maxbytes = 1 – *f_pos;
+  if( maxbytes > count )
+    bytes_to_write = count;
+  else
+    bytes_to_write = maxbytes;
+
+  if( bytes_to_write == 0 ){
+    printk(“Reached end of device\n”);
+    return -ENOSPC; /* Returns EOF at write() */
   }
+
+  nbytes = bytes_to_write – copy_from_user( onebyte_data + *f_pos, buf, bytes_to_write );
+  *f_pos += nbytes;
+  return nbytes;
 }
 
 static int onebyte_init(void)
