@@ -54,18 +54,18 @@ ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t 
   int nbytes;        /*Number of bytes actually written to the device */
   int bytes_to_write; /* Number of bytes to write */
   int maxbytes;    /* Maximum number of bytes that can be written */
-  maxbytes = 1 – *f_pos;
+  maxbytes = 1-*f_pos;
   if( maxbytes > count )
     bytes_to_write = count;
   else
     bytes_to_write = maxbytes;
 
   if( bytes_to_write == 0 ){
-    printk(“Reached end of device\n”);
-    return -ENOSPC; /* Returns EOF at write() */
+    printk("Reached end of device\n");
+    return -ENOSPC; 
   }
 
-  nbytes = bytes_to_write – copy_from_user( onebyte_data + *f_pos, buf, bytes_to_write );
+  nbytes = bytes_to_write - copy_from_user( onebyte_data + *f_pos, buf, bytes_to_write );
   *f_pos += nbytes;
   return nbytes;
 }

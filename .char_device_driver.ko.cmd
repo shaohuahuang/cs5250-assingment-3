@@ -1,0 +1,1 @@
+cmd_/home/airshaos/cs5250-assingment-3/char_device_driver.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/airshaos/cs5250-assingment-3/char_device_driver.ko /home/airshaos/cs5250-assingment-3/char_device_driver.o /home/airshaos/cs5250-assingment-3/char_device_driver.mod.o ;  true
